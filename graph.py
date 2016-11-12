@@ -2,18 +2,28 @@ class Vertex:
     
     def __init__(self,Data):
         self.data=Data
-        self.neigbours=None
+        self.neighbours=None
         self.others=None
 
 
-    def add_neighbour(self,V):
-        current=self.others
-        while current!=None or current==V:
-            current=current.next
-        if current==V:
-            print "{0} already exists in the graph".format()
+    def add_neighbour(self,N):
+        current=self.neighbours
+
+        if self.neighbours==None:
+            self.neighbours=N
+            return
+        
+        if self.neighbours.vertex==N:
+            raise NameError ("<{0}> already exists".format(N.vertex.data))
+            
         else:
-            current=V
+            while current.next!=None and current.next!=N:
+                current=current.next
+            if current.next==None:
+                current.next=N
+            elif current.next==N:
+                raise NameError ("<{0}> already exists".format(N.vertex.data))
+
 
             
             
@@ -50,6 +60,29 @@ class Graph:
                 current.others=newV
             elif current.others.data==Data:
                 raise NameError ("<{0}> already exists".format(Data))
+            
+
+    def add_edge(self,data1,data2):
+        V1=self.get_v(data1)
+        V2=self.get_v(data2)
+        v2n=Neighbour(V2)
+        V1.add_neighbour(v2n)
+
+        if not self.dirrected:        
+            v1n=Neighbour(V1)
+            V2.add_neighbour(v1n)
+
+            
+    def get_v(self,Data):
+        current=self.start
+        
+        while  current!=None and current.data!=Data:
+            current=current.others
+            
+        if current==None:
+            raise NameError ("<{0}> doesnt exist".format(Data))
+        
+        return current
 
                             
     def print_vertices(self):
@@ -59,58 +92,39 @@ class Graph:
             ans.append(current.data)
             current=current.others
         print ans
-
-
-    def print_edges(self,Data):
-        current=self.start
         
 
-    def get_v(self,Data):
+
+
+    def print_neignours(self,Data):
+        v=self.get_v(Data)
+        current=v.neighbours
+        ans=[]
+        while current!=None :
+            ans.append(current.vertex.data)
+            current=current.next
+        print ans
+
+    def print_graph(self):
         current=self.start
-        
-        while  current!=None and current.data!=Data:
+        ans=[]
+        ans2=[]
+        while current!=None :
+            ans.append(current.data)
+            current2=current.neighbours
+            sup=[]            
+            while current2!=None :
+                sup.append(current2.vertex.data)
+                current2=current2.next
+                
+            ans2.append(sup)
             current=current.others
-            
-        if current==None:
-            raise NameError ("<{0}> adoesnt exist".format(Data))
-        
-        return current
+      
+        print ans
+        print ans2
     
 
-    def add_edge(self,data1,data2):
-        current=self.start
-        V1=None
-        V2=None
-        
-        while current!=None or (current.Data!=Data1 or current.Data!=Data2) :
-            current=current.others
 
-        if current==None:
-            print "{0}, {1} doesnt exist".format(Data1,Data2)
-            return None
-        
-        if current.data== data1:
-            V1=current
-            
-            while current!=None or current.Data!=Data2 :
-                current=current.others
-                
-        elif current.data== data2:
-            while current!=None or current.Data!=Data1:
-                current=current.others
-                
-        if v1==None:
-            print "<{0}> does not exist".format(data1)
-            return None
-
-        if v2==None:
-            print "<{0}> does not exist".format(data2)
-            return None
-        
-        v1n=Neighbour(v1)
-        v2n=Neighbour(v2)
-        v1.add_neighbour(v2n)
-        v2.add_neighbour(v1n)
 
 
 
@@ -125,9 +139,12 @@ g.add_vertex("E")
 g.add_vertex("F")
 g.add_vertex("G")
 g.add_vertex("H")
+g.add_edge("A","B")
+g.add_edge("B","A")
+g.add_edge("A","C")
+g.add_edge("B","D")
 
-
-g.print_vertices()
+g.print_graph()
 
 
 
