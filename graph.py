@@ -4,6 +4,9 @@ class Vertex:
         self.data=Data
         self.neighbours=None
         self.others=None
+        self.visited=False
+        self.discoverd=False
+        self.pred=None
 
 
     def add_neighbour(self,N):
@@ -33,13 +36,14 @@ class Neighbour:
         self.vertex=Vertex
         self.next=None
 
+
         
         
 class Graph:
     
-    def __init__(self):
+    def __init__(self,dirrected):
         self.start=None
-        self.dirrected=True
+        self.dirrected=dirrected
 
 
     def add_vertex(self,Data):
@@ -84,53 +88,91 @@ class Graph:
         
         return current
 
-                            
-    def print_vertices(self):
+        
+    def get_vertices(self):
         current=self.start
         ans=[]
         while current!=None :
             ans.append(current.data)
             current=current.others
-        print ans
+            
+        return ans
         
 
-
-
-    def print_neignours(self,Data):
+    def get_neighbours(self,Data):
         v=self.get_v(Data)
         current=v.neighbours
         ans=[]
         while current!=None :
-            ans.append(current.vertex.data)
+            ans.append(current.vertex)
             current=current.next
-        print ans
+            
+        return ans
+    
 
     def print_graph(self):
         current=self.start
-        ans=[]
         ans2=[]
         while current!=None :
-            ans.append(current.data)
+            x=current.data
             current2=current.neighbours
             sup=[]            
             while current2!=None :
                 sup.append(current2.vertex.data)
                 current2=current2.next
                 
-            ans2.append(sup)
+            ans2.append((x,sup))
             current=current.others
-      
-        print ans
+            
         print ans2
+
+
+    def path(self,data1,data2):
+        v1=self.get_v(data1)
+        v2=self.get_v(data2)
+        current=v1
+        l=[]
+        l.append(current)
+        ans=[]
+        while len(l)>0:
+            current=l.pop(0)
+            if current==v2:                        
+                break
+                
+            elif not current.visited:                
+                current.visited=True
+                
+                ll=self.get_neighbours(current.data)
+                if len(ll)>0:
+                    for i in ll:
+                        if i.discoverd:
+                            pass
+                        else:
+                            i.pred=current
+                            i.discoverd=True
+                    l.extend(ll)    
+            else:
+                pass
+                        
+
+        
+        while not current.pred==v1:
+            ans.insert(0,current.pred)
+            current=current.pred
+            
+        ans.insert(0,v1)
+
+        return ans
     
 
+    def shortest_way_len(self,v1,v2):
+        return len(self.path(v1,v2))
+        
+                
 
 
-
-
-
-g=Graph()
-
+                
+g=Graph(True)
 g.add_vertex("A")
 g.add_vertex("B")
 g.add_vertex("C")
@@ -140,11 +182,19 @@ g.add_vertex("F")
 g.add_vertex("G")
 g.add_vertex("H")
 g.add_edge("A","B")
-g.add_edge("B","A")
 g.add_edge("A","C")
 g.add_edge("B","D")
+g.add_edge("D","E")
+g.add_edge("D","F")
+g.add_edge("D","A")
+g.add_edge("F","G")
+g.add_edge("G","H")
+
 
 g.print_graph()
+print("___________________")
+print ("ans",map(lambda x:x.data+"->",g.path("A","G")))
+
 
 
 
