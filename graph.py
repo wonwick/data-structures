@@ -67,8 +67,16 @@ class Graph:
             
 
     def add_edge(self,data1,data2):
-        V1=self.get_v(data1)
-        V2=self.get_v(data2)
+        try:
+            V1=self.get_v(data1)
+        except:
+            self.add_vertex(data1)
+            V1=self.get_v(data1)
+        try:
+            V2=self.get_v(data2)
+        except:
+            self.add_vertex(data2)
+            V2=self.get_v(data2)
         v2n=Neighbour(V2)
         V1.add_neighbour(v2n)
 
@@ -127,7 +135,8 @@ class Graph:
         print ans2
 
 
-    def path(self,data1,data2):
+    def BFS_path(self,data1,data2):
+        self.reset()
         v1=self.get_v(data1)
         v2=self.get_v(data2)
         current=v1
@@ -167,36 +176,101 @@ class Graph:
 
     def shortest_way_len(self,v1,v2):
         return len(self.path(v1,v2))
+
+    def reset(self):
+        current=self.start
+        while current.others!=None:
+            current.visited=False
+            current.discoverd=False
+            current.pred=None
+            current=current.others
+
+    def DFS_path(self,data1,data2):
+        self.reset()
+        v1=self.get_v(data1)
+        v2=self.get_v(data2)
+        current=v1
+        current.pred=v1
+        l=[]
+        l.append(current)
+        ans=[]
+        while len(l)>0:
+            current=l.pop()
+##            print current.data,"    pred: ",current.pred.data
+            
+            if current==v2:                        
+                break
+                
+            elif not current.visited:                
+                current.visited=True
+                current.discoverd=True
+                ll=self.get_neighbours(current.data)
+##                print "ll: ",map(lambda x:x.data,ll)
+                
+                if len(ll)>0:
+                    for i in ll:
+                        if i.discoverd:
+##                            print i.data,"already discovered"
+                            pass
+                        else:
+##                            print i.data," pred is set to ",current.data
+                            i.pred=current
+                            i.discoverd=True
+                    l.extend(ll)
+                    
+            else:
+                pass
+##            print map(lambda x:x.data,l)
+            
+                        
+
+        
+        while not current.pred==v1:
+            ans.insert(0,current.pred)
+            current=current.pred
+##            print "ans",map(lambda x:x.data,ans)
+            
+        ans.insert(0,v1)
+
+        return ans
+        
+        
+        
         
                 
-
-
                 
-g=Graph(True)
-g.add_vertex("A")
-g.add_vertex("B")
-g.add_vertex("C")
-g.add_vertex("D")
-g.add_vertex("E")
-g.add_vertex("F")
-g.add_vertex("G")
-g.add_vertex("H")
-g.add_edge("A","B")
-g.add_edge("A","C")
-g.add_edge("B","D")
-g.add_edge("D","E")
-g.add_edge("D","F")
-g.add_edge("D","A")
-g.add_edge("F","G")
-g.add_edge("G","H")
-
-
-g.print_graph()
-print("___________________")
-print ("ans",map(lambda x:x.data+"->",g.path("A","G")))
+g=Graph(False)
 
 
 
+string="lab,a,h,d g,a d,a b,a c,b e,e f,f g,g h"
+string=string.split(",")
+word=string[0]
+start=string[1]
+end=string[2]
+string=string[3:]
+for i in string:
+    x=i.split()
+    g.add_edge(x[0],x[1])
+
+ans=map(lambda x:x.data,g.BFS_path(start,end))
+
+for j in ans:
+    word+=j
+
+
+print word+end
+
+word="lab"
+
+
+ans=map(lambda x:x.data,g.DFS_path(start,end))
+
+for j in ans:
+    word+=j
+
+
+print word+end
 
 
 
