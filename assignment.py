@@ -5,6 +5,7 @@ class Node:
         self.data=Data
         self.left=None
         self.right=None
+        
 
 
 class BST( object ):
@@ -15,6 +16,7 @@ class BST( object ):
 
     def getRoot( self ):
         return self.root
+    
 
     def add( self, el ):
         n, p = self.root, None
@@ -33,30 +35,37 @@ class BST( object ):
             p.left = Node( el )
         else:
             p.right = Node( el )
+            
 
     def find(self,price):
-         n, p = self.root, None
+        n, p = self.root, None
+        print ("price: ",price)
 
-        while n is not None and n.data.price<price and n.data.av==True:
-            p = n
-            if el.price <= n.data.price:
+        while n is not None:
+            if (n.data.price<=price and n.data.av==True and abs(n.data.price-price)<5):
+                break
+            print ("price: ",price,"    nodes prize:",n.data.price,"nodes name:",n.data.name)
+            print(n.data.price<=price,n.data.av==True)
+            if price < n.data.price:
+                print("chose left")
                 n = n.left
-            else:
+            elif price > n.data.price:
+                print("chose right")
                 n = n.right
+                
+        if n is None:
+          print ("n is None no match found")      
+          return
 
-        if n is not none and abs(n.price-price)<5:
+        if n is not None and abs(n.data.price-price)<5:
+            print ("matched")
             n.data.av=False
             return n.data.name
         else:
+            
+            print ("chose else because difference is bigger than what is needed")
             return
         
-
-
-
-
-
-
-            
 
     def preOrder(self,root):
         l=[]    
@@ -70,6 +79,7 @@ class BST( object ):
         for i in l:
             s+=str(i)+" "
         print (s)
+        
 
     def inOrder(self,root):
         l=[]    
@@ -84,6 +94,7 @@ class BST( object ):
         for i in l:
             s+=str(i)+" "
         print (s)
+        
 
     def postOrder(self,root):
         l=[]    
@@ -100,17 +111,8 @@ class BST( object ):
             s+=str(i)+" "
         print (s)
 
-buyersTree=BST()
 
 
-
-##buyers=input().split("#")
-##sellers=input().split("#")
-
-buyers="A,30000,01:35#B,13000,18:45#C,10000,12:54#D,10000,11:34".split("#")
-sellers="X,13000,05:30#Y,25000,21:00#Z,30001,04:09#P,10000,09:09".split("#")
-print (buyers)
-print (sellers)
 class Cust:
     def __init__(self,bid):
         x=bid.split(",")
@@ -118,37 +120,80 @@ class Cust:
         self.name=x[0]
         self.price=int(x[1])
         self.time=datetime.datetime.strptime(x[2], "%H:%M")
+
+
+
+def match(seller,buyersTree):
+  ans=buyersTree.find(seller.price)
+  if ans==None:
+    return
+  else:
+    return (ans,seller.name)                
         
+
+buyersTree=BST()
+
+
+
+##buyers=input().split("#")
+##sellers=input().split("#")
+
+buyers="A,30000,01:35#B,13000,18:45#C,10000,12:54#D,10000,11:34#E,999,01:34".split("#")
+sellers="X,13000,05:30#Y,25000,21:00#Z,30001,04:09#P,10000,09:09".split("#")
+##print (buyers)
+##print (sellers)
+
+
+
+
+
+
+
 
 buyersl=[]
 sellersl=[]
+
 for i in buyers:
-    buyersTree.add(Cust(i,True))
-    buyersl=[]
-    
+    buyersl.append(Cust(i))
     
     
 for j in sellers:
-    sellersl.append(Cust(i,False))
-    
-print (buyersl)
-print (sellersl)
+    sellersl.append(Cust(j))
+
 buyersl.sort(key=lambda x:x.time)
-sellers
+sellersl.sort(key=lambda x:x.time)
+buyersl.sort(key=lambda x:x.price,reverse=True)
+sellersl.sort(key=lambda x:x.price,reverse=True) 
+  
+for k in buyersl:
+    buyersTree.add(k)
+
+
+
+
+    
+
+
+print ("buyersl",list(map(lambda x:x.name+"  "+str(x.time)+"  "+str(x.price),buyersl)))
+print ("sellersl",list(map(lambda x:x.name+"  "+str(x.time)+"  "+str(x.price),sellersl)))
+
+
+
 
     
 buyersTree.preOrder(buyersTree.root)
-buyersTree.inOrder(buyersTree.root)
-buyersTree.postOrder(buyersTree.root)
+##buyersTree.inOrder(buyersTree.root)
+##buyersTree.postOrder(buyersTree.root)
 
 
 
 
 
+answer=[]
+for j in sellersl:
+  answer.append(match(j,buyersTree))
 
-
-
-    
+print (answer)    
     
     
 
